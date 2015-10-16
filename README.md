@@ -81,9 +81,10 @@ After a plane takes off, the user may want to record the departure. Your system 
 
 After a landing, the user may want to record the arrival and your system should support the task.
 
+## Optional Queries
+
 You are expected to implement one or two tasks of your choice from the following list, depending on the size of your group. A group of two members is required to implement one of the three tasks; a group of three is required to implement two of the tasks. These tasks will not be weighted more than 10% of the project mark, and it is recommended that they are implemented after implementing and testing the basic functionalities, as listed above.
 
-## Optional As Per Above Instructions
 
 ###Support search and booking of round-trips. 
 
