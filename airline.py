@@ -11,8 +11,7 @@ class UI():
     """
 
     def __init__(self):
-        # TODO: start the DB class
-        pass
+        self.db = DB()
 
     def start(self):
         print("Welcome to the airline system")
@@ -41,6 +40,7 @@ class UI():
         passwd = input("Password: ")
         # TODO: check if user is registered
         print("Logged in")
+        self.email = email
         self.userOptions()
         
 
@@ -81,7 +81,13 @@ class UI():
     def searchForFlight(self):
         pass
 
-    def makeBooking(self):
+    def makeBooking(self, flightno):
+        name = input("Passenger name:")
+        passinfo = db.getPassenger(name, self.email)
+        if not passinfo:
+            db.addPassenger(name, self.email)
+        
+        
         pass
 
     def listBookings(self):
