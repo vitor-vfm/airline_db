@@ -38,14 +38,20 @@ class UI():
     def login(self):
         email = input("Email: ")
         passwd = input("Password: ")
-        # TODO: check if user is registered
-        print("Logged in")
-        self.email = email
-        self.userOptions()
+        user = self.db.getUser(email)
+        if not user:
+            print("User not registered. Please sign up")
+            self.startScreen()
+        else:
+            print("Logged in")
+            self.email = email
+            self.db.updateLastLogin(email)
+            self.userOptions()
         
 
     def signup(self):
         email = input("Email: ")
+        user = self.db.getUser(email, passwd)
         # TODO: check if user is registered
         # If not, register the user
         passwd = input("Password: ")
@@ -82,13 +88,17 @@ class UI():
         pass
 
     def makeBooking(self, flightno):
-        name = input("Passenger name:")
-        passinfo = db.getPassenger(name, self.email)
+        name = input("Passenger name: ")
+        passinfo = self.db.getPassenger(name, self.email)
         if not passinfo:
-            db.addPassenger(name, self.email)
-        
-        
-        pass
+            print("Passenger not in system. Adding passenger")
+            country = input("Please input passenger's country")
+            self.db.addPassenger(name, self.email, country)
+
+        ticket = self.db.addBooking(name, self.email, flightno)
+        if ticket:
+            print("Success")
+            print("Your ticket number is ", ticket)
 
     def listBookings(self):
         pass
