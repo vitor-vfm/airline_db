@@ -36,56 +36,56 @@ create table sch_flights (
       primary key (flightno,dep_date),
       foreign key (flightno) references flights 
         on delete cascade
-    );
-    create table fares (
-          fare      char(2),
-          descr     char(15),
-          primary key (fare)
-    );
-    create table flight_fares (
-          flightno  char(6),
-          fare      char(2),
-          limit     int,
-          price     float,
-          bag_allow int,
-          primary key (flightno,fare),
-          foreign key (flightno) references flights,
-          foreign key (fare) references fares
-    );
-    create table users (
-          email         char(20),
-          pass      char(4),
-          last_login    date,
-          primary key (email)
-    );
-    create table passengers (
-          email     char(20),
-          name      char(20),
-          country   char(10),
-          primary key (email,name)
-    );
-    create table tickets (
-          tno       int,
-          name      char(20),
-          email     char(20),
-          paid_price    float,
-          primary key (tno),
-          foreign key (email,name) references passengers
-    );
-    create table bookings (
-          tno       int,
-          flightno  char(6),
-          fare      char(2),
-          dep_date  date,
-          seat      char(3),
-          primary key (tno,flightno,dep_date),
-          foreign key (tno) references tickets,
-          foreign key (flightno,dep_date) references sch_flights,
-          foreign key (fare) references fares
-    );
-    create table airline_agents (
-          email         char(20),
-          name      char(20),
-          primary key (email),
-          foreign key (email) references users
-    );
+);
+create table fares (
+      fare      char(2),
+      descr     char(15),
+      primary key (fare)
+);
+create table flight_fares (
+      flightno  char(6),
+      fare      char(2),
+      limit     int,
+      price     float,
+      bag_allow int,
+      primary key (flightno,fare),
+      foreign key (flightno) references flights,
+      foreign key (fare) references fares
+);
+create table users (
+      email         char(20),
+      pass      char(4),
+      last_login    date,
+      primary key (email)
+);
+create table passengers (
+      email     char(20),
+      name      char(20),
+      country   char(10),
+      primary key (email,name)
+);
+create table tickets (
+      tno       int,
+      name      char(20),
+      email     char(20),
+      paid_price    float,
+      primary key (tno),
+      foreign key (email,name) references passengers
+);
+create table bookings (
+      tno       int,
+      flightno  char(6),
+      fare      char(2),
+      dep_date  date,
+      seat      char(3),
+      primary key (tno,flightno,dep_date),
+      foreign key (tno) references tickets,
+      foreign key (flightno,dep_date) references sch_flights,
+      foreign key (fare) references fares
+);
+create table airline_agents (
+      email         char(20),
+      name      char(20),
+      primary key (email),
+      foreign key (email) references users
+);
