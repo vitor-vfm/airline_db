@@ -26,16 +26,16 @@ Database Specification
 
 You are given the following relational schema.
 
-    airports(acode, name, city, country, tzone)
-    flights(flightno, src, dst, dep_time, est_dur)
-    sch_flights(flightno, dep_date, act_dep_time, act_arr_time)
-    fares(fare, descr)
-    flight_fares(flightno, fare, limit, price, bag_allow)
-    users(email, pass, last_login)
-    passengers(email, name, country)
-    tickets(tno, name, email, paid_price)
-    bookings(tno, flightno, fare, dep_date, seat)
-    airline_agents(email, name)
+    airports(*acode*, name, city, country, tzone)
+    flights(*flightno*, src, dst, dep_time, est_dur)
+    sch_flights(*flightno, dep_date*, act_dep_time, act_arr_time)
+    fares(*fare*, descr)
+    flight_fares(*flightno, fare*, limit, price, bag_allow)
+    users(*email*, pass, last_login)
+    passengers(*email, name*, country)
+    tickets(*tno*, name, email, paid_price)
+    bookings(*tno, flightno, dep_date*, fare, seat)
+    airline_agents(*email*, name)
 
 The tables are derived from the spec of Assignment 1 and are identical to those in Assignment 2 except the newly added tables users which authenticates the users of your application and airlne_agents which lists the authorized airline agents. The primary key for passengers is changed to email and name, and the name field is added to the tickets table; this change allows users to book for multiple passengers. The SQL commands to create the tables of the system are given here. Use the given schema in your project and do not change any table/column names as we will be testing your project with the given schema.
 
