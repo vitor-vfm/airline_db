@@ -51,13 +51,15 @@ class UI():
 
     def signup(self):
         email = input("Email: ")
-        user = self.db.getUser(email, passwd)
-        # TODO: check if user is registered
-        # If not, register the user
-        passwd = input("Password: ")
-        # record new user
-        print("New user added")
+        user = self.db.getUser(email)
+        if not user:
+            passwd = input("Password: ")
+            self.db.addUser(email,passwd)
+            print("New user added")
+        else:
+            print("Email already in use")
         self.startScreen()
+
 
     def userOptions(self):
 
@@ -85,7 +87,44 @@ class UI():
             self.startScreen()
 
     def searchForFlight(self):
-        pass
+        """
+        Ask the user for input and search for corresponding flight
+        """
+        departure = input("Enter departure date (YYYY-MM-DD): ")
+
+        source = input("Enter source airport").upper()
+        if not self.db.airportExists(source):
+            airports = self.db.getSimilarAirports(source)
+            print("Please select the right airport: ")
+            for i, a in enumerate(airports):
+                print(i, a)
+            option = input("Pick a number: ")
+            source = airports[int(option)]
+
+        dest = input("Enter destination airport")
+        if not self.db.airportExists(dest):
+            airports = self.db.getSimilarAirports(dest)
+            print("Please select the right airport: ")
+            for i, a in enumerate(airports):
+                print(i, a)
+            option = input("Pick a number: ")
+            dest = airports[int(option)]
+
+        option = input("Do you want to sort by connections (y/n)?")
+        
+        self.flights = self.db.getFlights(source, dest, departure, (option == "y"))
+
+        self.printFlights()
+
+        self.startScreen()
+
+    def printFlights():
+        """
+        Display list of flights to the user
+        """
+        for i, f in enumerate(self.flights):
+            print(i, f)
+
 
     def makeBooking(self, flightno):
         name = input("Passenger name: ")
