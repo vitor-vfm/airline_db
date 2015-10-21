@@ -130,6 +130,7 @@ class UI():
             print("Sorry, there isn't any flight available for you")
             return
 
+        print("(flight 1, flight 2, source, destination, layover, price, time of departure, time of arrival, number of connections, seats in flight 1, seats in flight 2)")
         for i, f in enumerate(self.flights):
             print(i, f)
 
@@ -141,8 +142,7 @@ class UI():
             print("Passenger not in system. Adding passenger")
             country = input("Please input passenger's country")
             self.db.addPassenger(name, self.email, country)
-
-        ticket = self.db.addBooking(name, self.email, flightno)
+            ticket = self.db.addBooking(name, self.email, flightno)
         if ticket:
             print("Success")
             print("Your ticket number is ", ticket)

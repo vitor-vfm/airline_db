@@ -91,11 +91,11 @@ class DB():
         Retrieve all flights (or pair of flights) available
         with the specifications
         """
-        stmt = "(select flightno1, flightno2, layover, price, dep_time, arr_time, 1 nCons " + \
+        stmt = "(select flightno1, flightno2, src, dst, layover, price, to_char(dep_time, 'HH:MI AM'), to_char(arr_time, 'HH:MI AM'), 1 nCons, seats1, seats2 " + \
                 "from connections " + \
                 "where to_char(dep_date,'YYYY-MM-DD')='%s' and src='%s' and dst='%s') " % (departure, source, dest) + \
                 "union " + \
-                "(select flightno flightno1, '' flightno2, 0 layover, price, dep_time, arr_time, 0 nCons " + \
+                "(select flightno flightno1, null flightno2, src, dst,  0 layover, price, to_char(dep_time, 'HH:MI AM'), to_char(arr_time, 'HH:MI AM'), 0 nCons, seats seats1, null seats2 " + \
                 "from available_flights " + \
                 "where to_char(dep_date,'YYYY-MM-DD')='%s' and src='%s' and dst='%s') " % (departure, source, dest)
         if sortByCons:
