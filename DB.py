@@ -21,10 +21,8 @@ class DB():
         cur = self.con.cursor()
         for fname in ['available_flights.sql','connections.sql']:
             script = open(fname).read()
-            commands = script.replace('\n','').split(';')
-            for c in commands:
-                print(c)
-                cur.execute(c)
+            cur.execute(script)
+        self.con.commit()
 
     def fetch(self, stmt):
         """
@@ -49,6 +47,7 @@ class DB():
         print("stmt:")
         print(stmt)
         cur.execute(stmt)
+        self.con.commit()
         cur.close()
         
 
@@ -72,12 +71,12 @@ class DB():
         ";"
         self.update(stmt)
 
-    def airportExists(airport):
+    def airportExists(self, airport):
         stmt = "SELECT acode FROM airports " + \
                 "WHERE acode='%s' " % airport
         return (self.fetch(stmt) != [])
 
-    def getSimilarAirports(airport):
+    def getSimilarAirports(self, airport):
         """
         Find airports that might match the string given
         """
@@ -87,17 +86,16 @@ class DB():
                 "OR UPPER(name) LIKE '%{}%' ".format(airport)
         return self.fetch(stmt)
 
-
     def getFlights(self, source, dest, departure, sortByCons=False):
         """
         Retrieve all flights (or pair of flights) available
         with the specifications
         """
-        stmt = "select flightno1, flightno2, layover, price, dep_time, arr_time, 1 nCons " + \
+        stmt = "(select flightno1, flightno2, layover, price, dep_time, arr_time, 1 nCons " + \
                 "from connections " + \
-                "where to_char(dep_date,'YYYY-MM-DD')='%s' and src='%s' and dst='%s' " % (departure, source, dest) + \
+                "where to_char(dep_date,'YYYY-MM-DD')='%s' and src='%s' and dst='%s') " % (departure, source, dest) + \
                 "union " + \
-                "select flightno flightno1, '' flightno2, 0 layover, price, dep_time, arr_time, 0 nCons " + \
+                "(select flightno flightno1, '' flightno2, 0 layover, price, dep_time, arr_time, 0 nCons " + \
                 "from available_flights " + \
                 "where to_char(dep_date,'YYYY-MM-DD')='%s' and src='%s' and dst='%s') " % (departure, source, dest)
         if sortByCons:
@@ -106,7 +104,7 @@ class DB():
             stmt += "order by price "
         return self.fetch(stmt)
 
-    def seatsAvailable(flightno):
+    def seatsAvailable(self, flightno):
         """
         Check if there are any seats 
         available in a given scheduled flight
@@ -121,7 +119,7 @@ class DB():
         Fetch user(s)
         """
         stmt = "SELECT * FROM users U " + \
-        "WHERE U.email='%s';" % email
+        "WHERE U.email='%s'" % email
         return self.fetch(stmt)
 
     def addUser(self, email, passwd):
@@ -132,9 +130,7 @@ class DB():
         of the user is set to null
         """
         stmt = "INSERT INTO users " + \
-        "VALUES ('%s', '%s', NULL)" % (email, passwd) + \
-        ";"
-        print(stmt)
+        "VALUES ('%s', '%s', NULL)" % (email, passwd)
         self.update(stmt)
 
     def updateLastLogin(self, email):
@@ -145,8 +141,7 @@ class DB():
         """
         stmt = "UPDATE users "  + \
         "SET last_login=SYSDATE " + \
-        "WHERE email=%s" % email + \
-        ";"
+        "WHERE email='%s'" % email
         self.update(stmt)
 
 

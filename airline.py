@@ -45,7 +45,6 @@ class UI():
         else:
             print("Logged in")
             self.email = email
-            self.db.updateLastLogin(email)
             self.userOptions()
         
 
@@ -58,6 +57,12 @@ class UI():
             print("New user added")
         else:
             print("Email already in use")
+        self.startScreen()
+
+    def logout(self):
+        self.db.updateLastLogin(self.email)
+        self.email = ""
+        print("Logged out")
         self.startScreen()
 
 
@@ -83,45 +88,48 @@ class UI():
         elif inp == '4':
             self.cancelBooking()
         else:
-            print("Logged out")
-            self.startScreen()
+            self.logout()
+
+    def validateAirport(self, air):
+        """
+        Verify user input for airport
+        """
+        air = air.upper()
+        if not self.db.airportExists(air):
+            airports = self.db.getSimilarAirports(air)
+            if not airports:
+                print("There isn't any airport with that name")
+                self.userOptions()
+            print("Please select the right airport: ")
+            for i, a in enumerate(airports):
+                print(i, a)
+            option = input("Pick a number: ")
+            air = airports[int(option)][0]
+        return air
 
     def searchForFlight(self):
         """
         Ask the user for input and search for corresponding flight
         """
         departure = input("Enter departure date (YYYY-MM-DD): ")
-
-        source = input("Enter source airport").upper()
-        if not self.db.airportExists(source):
-            airports = self.db.getSimilarAirports(source)
-            print("Please select the right airport: ")
-            for i, a in enumerate(airports):
-                print(i, a)
-            option = input("Pick a number: ")
-            source = airports[int(option)]
-
-        dest = input("Enter destination airport")
-        if not self.db.airportExists(dest):
-            airports = self.db.getSimilarAirports(dest)
-            print("Please select the right airport: ")
-            for i, a in enumerate(airports):
-                print(i, a)
-            option = input("Pick a number: ")
-            dest = airports[int(option)]
-
-        option = input("Do you want to sort by connections (y/n)?")
+        source = self.validateAirport(input("Enter source airport: "))
+        dest = self.validateAirport(input("Enter destination airport: "))
+        option = input("Do you want to sort by connections (y/n)? ")
         
         self.flights = self.db.getFlights(source, dest, departure, (option == "y"))
 
         self.printFlights()
 
-        self.startScreen()
+        self.userOptions()
 
-    def printFlights():
+    def printFlights(self):
         """
         Display list of flights to the user
         """
+        if not self.flights:
+            print("Sorry, there isn't any flight available for you")
+            return
+
         for i, f in enumerate(self.flights):
             print(i, f)
 
