@@ -12,6 +12,8 @@ class UI():
 
     def __init__(self):
         self.db = DB()
+        self.flights = []
+        self.bookings = []
 
     def start(self):
         print("Welcome to the airline system")
@@ -148,10 +150,40 @@ class UI():
             print("Your ticket number is ", ticket)
 
     def listBookings(self):
+        """
+        Save the list of bookings in
+        self.bookings
+        """
         pass
 
+    def printBookings(self):
+        if not self.bookings:
+            print("You haven't selected bookings yet")
+            return
+
+        print("(ticket no, passenger, departure date, price)")
+        for i, f in enumerate(self.bookings):
+            print(i, f)
+
     def cancelBooking(self):
-        pass
+        """
+        Select a booking from the list
+        and cancel it
+        """
+        if not self.bookings:
+            # TODO: make this more usable
+            print("Please list bookings first")
+            self.userOptions()
+        else:
+            print("Here are your bookings")
+            self.printBookings()
+            option = input("Which one would you like to cancel?")
+            ticketno = self.bookings[int(option)][0]
+            self.db.deleteBooking(ticketno)
+            print("Done")
+            self.userOptions()
+
+
 
 # END OF UI CLASS
 

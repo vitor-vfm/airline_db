@@ -114,6 +114,16 @@ class DB():
     def addBooking(flightno, passemail):
         pass
 
+    def deleteBooking(self, ticketno):
+        """
+        From a ticket number, delete corresponding
+        rows in tickets and bookings
+        """
+        for table in ['bookings','tickets']:
+            stmt  = "DELETE FROM %s " % table + \
+                    "WHERE tno='%s' " % ticketno
+            self.update(stmt)
+
     def getUser(self, email):
         """
         Fetch user(s)
