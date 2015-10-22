@@ -143,6 +143,16 @@ class DB():
         "VALUES ('%s', '%s', NULL)" % (email, passwd)
         self.update(stmt)
 
+    def isAirlineAgent(self,email):
+        """
+        Check in the database if the given 
+        user is an airline agent
+        """
+        stmt = "SELECT email FROM airline_agents " + \
+                "WHERE email='%s' " % email
+        return self.fetch(stmt) != []
+
+
     def updateLastLogin(self, email):
         """
         Given a user email, updates

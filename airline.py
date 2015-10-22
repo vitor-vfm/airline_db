@@ -47,6 +47,7 @@ class UI():
         else:
             print("Logged in")
             self.email = email
+            self.isAgent = self.db.isAirlineAgent(self.email)
             self.userOptions()
         
 
@@ -64,6 +65,7 @@ class UI():
     def logout(self):
         self.db.updateLastLogin(self.email)
         self.email = ""
+        self.isAgent = False
         print("Logged out")
         self.startScreen()
 
@@ -77,8 +79,15 @@ class UI():
         "4 - Cancel a booking\n" + \
         "5 - Logout\n"
 
+        if self.isAgent:
+            prompt += "6 - Record flight departure\n" + \
+                    "7 - Record flight arrival\n"
+            availableOptions = list('1234567')
+        else:
+            availableOptions = list('12345')
+
         inp = ""
-        while (not inp) or inp not in list('12345'):
+        while (not inp) or inp not in availableOptions:
             inp = input(prompt)
 
         if inp == '1':
@@ -89,6 +98,10 @@ class UI():
             self.listBookings()
         elif inp == '4':
             self.cancelBooking()
+        elif inp == '6':
+            self.recordDeparture()
+        elif inp == '7':
+            self.recordArrival()
         else:
             self.logout()
 
@@ -182,6 +195,20 @@ class UI():
             self.db.deleteBooking(ticketno)
             print("Done")
             self.userOptions()
+
+    def recordDeparture(self):
+        """
+        Record in the system actual departure
+        of a given flight
+        """
+        pass
+
+    def recordArrival(self):
+        """
+        Record in the system actual arrival
+        of a given flight
+        """
+        pass
 
 
 
