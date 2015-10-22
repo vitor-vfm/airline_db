@@ -15132,3 +15132,8 @@ insert into bookings values ('109','AC2398','X',to_date('11-Aug-2015','DD-Mon-YY
 insert into bookings values ('111','AC2223','B',to_date('14-Dec-2015','DD-Mon-YYYY'),'10F');
 insert into bookings values ('112','AC2062','E',to_date('30-Aug-2015','DD-Mon-YYYY'),'30A');
 insert into bookings values ('113','AC2429','T',to_date('19-Nov-2015','DD-Mon-YYYY'),'23F');
+
+insert into users values ('u@test', 'pass', null);
+insert into users values ('a@test', 'pass', null);
+
+insert into airline_agents values ('a@test', 'agent');
