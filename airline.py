@@ -145,7 +145,9 @@ class UI():
             print("Sorry, there isn't any flight available for you")
             return
 
-        print("(flight 1, flight 2, source, destination, layover, price, time of departure, time of arrival, number of connections, seats in flight 1, seats in flight 2)")
+        print("(flight 1, flight 2, source, destination, layover, " + \
+                "price, time of departure, time of arrival, number of " + \
+                "connections, seats in flight 1, seats in flight 2)")
         for i, f in enumerate(self.flights):
             print(i, f)
 
@@ -165,7 +167,7 @@ class UI():
     def listBookings(self):
         """
         Save the list of bookings in
-        self.bookings
+        self.bookings and print it
         """
         pass
 
@@ -201,14 +203,26 @@ class UI():
         Record in the system actual departure
         of a given flight
         """
-        pass
+        flightno = input("Inform which flight departed: ").upper()
+        dep_date = input("Inform the flight's scheduled departure day (YYYY-MM-DD): ")
+        actual_departure = input("Inform date and time of departure " + \
+                "(YYYY-MM-DD HH:MI): ")
+        self.db.recordActualTime(flightno, dep_date, actual_departure, departure=True)
+        print("Done")
+        self.userOptions()
+
 
     def recordArrival(self):
         """
         Record in the system actual arrival
         of a given flight
         """
-        pass
+        flightno = input("Inform which flight arrived: ").upper()
+        dep_date = input("Inform the flight's scheduled arrival day (YYYY-MM-DD): ")
+        actual_arrival = input("Inform date and time of arrival (YYYY-MM-DD HH:MI): ")
+        self.db.recordActualTime(flightno, dep_date, actual_arrival, departure=False)
+        print("Done")
+        self.userOptions()
 
 
 

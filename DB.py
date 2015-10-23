@@ -124,6 +124,25 @@ class DB():
                     "WHERE tno='%s' " % ticketno
             self.update(stmt)
 
+    def recordActualTime(self, flightno, dep_date, actualTime, departure):
+        """
+        Update the actual arrival or departure 
+        of a flight in the DB
+
+        'departure' is a boolean that informs if the 
+        time to be updated is the departure or arrival
+        """
+        if departure:
+            col = 'act_dep_time'
+        else:
+            col = 'act_arr_time'
+
+        stmt = "UPDATE sch_flights " + \
+                "SET %s=to_date('%s', 'YYYY-MM-DD HH:MI') " % (col, actualTime) + \
+                "WHERE flightno='%s' " % flightno + \
+                "AND to_char(dep_date, 'YYYY-MM-DD')='%s' " % dep_date
+        self.update(stmt)
+
     def getUser(self, email):
         """
         Fetch user(s)
@@ -151,7 +170,6 @@ class DB():
         stmt = "SELECT email FROM airline_agents " + \
                 "WHERE email='%s' " % email
         return self.fetch(stmt) != []
-
 
     def updateLastLogin(self, email):
         """
