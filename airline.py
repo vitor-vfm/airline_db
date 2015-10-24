@@ -14,6 +14,9 @@ class UI():
         self.db = DB()
         self.flights = []
         self.bookings = []
+        ###### test booking for 'make a booking feature'
+        # checked and it works
+        # self.db.addBooking("Uma", "s@test", "AC158", "100", "22-Dec-2015")
 
     def start(self):
         print("Welcome to the airline system")
@@ -126,12 +129,12 @@ class UI():
         """
         Ask the user for input and search for corresponding flight
         """
-        departure = input("Enter departure date (YYYY-MM-DD): ")
+        self.departure = input("Enter departure date (YYYY-MM-DD): ")
         source = self.validateAirport(input("Enter source airport: "))
         dest = self.validateAirport(input("Enter destination airport: "))
         option = input("Do you want to sort by connections (y/n)? ")
         
-        self.flights = self.db.getFlights(source, dest, departure, (option == "y"))
+        self.flights = self.db.getFlights(source, dest, self.departure, (option == "y"))
 
         self.printFlights()
 
@@ -151,17 +154,31 @@ class UI():
         for i, f in enumerate(self.flights):
             print(i, f)
 
+    
 
-    def makeBooking(self, flightno):
+    def makeBooking(self):
+        # FIXME: add error checking, and support for flight2
+
+        option = input("Pick a flight number: ")
+        flightInfo = self.flights[int(option)]
+        
+        flightno1 = flightInfo[0]
+        price = flightInfo[5]
+        seats1 = flightInfo[9]
+        if int(seats1) == 0:
+            print("No seats available.")
+            return
+
         name = input("Passenger name: ")
         passinfo = self.db.getPassenger(name, self.email)
         if not passinfo:
             print("Passenger not in system. Adding passenger")
-            country = input("Please input passenger's country")
+            country = input("Please input passenger's country: ")
             self.db.addPassenger(name, self.email, country)
-            ticket = self.db.addBooking(name, self.email, flightno)
+
+        ticket = self.db.addBooking(name, self.email, flightno1, price, self.departure)
         if ticket:
-            print("Success")
+            print("Success.")
             print("Your ticket number is ", ticket)
 
     def listBookings(self):

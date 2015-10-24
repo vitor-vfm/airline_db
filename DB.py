@@ -1,4 +1,5 @@
 import cx_Oracle as Or
+from random import randint
 
 class DB():
     """
@@ -56,9 +57,9 @@ class DB():
         Return a list of all rows that match
         the name and email
         """
-        stmt = "SELECT * FROM passenger " + \
+        stmt = "SELECT * FROM passengers " + \
         "WHERE email = '%s' " % email + \
-        "AND name = '%s';" % name
+        "AND name = '%s'" % name
 
         return self.fetch(stmt)
 
@@ -67,8 +68,7 @@ class DB():
         Add a new passenger to the DB
         """
         stmt = "INSERT INTO passengers " + \
-        "VALUES ('%s', '%s', '%s')" % (email, name, country) + \
-        ";"
+        "VALUES ('%s', '%s', '%s')" % (email, name, country)
         self.update(stmt)
 
     def airportExists(self, airport):
@@ -104,15 +104,90 @@ class DB():
             stmt += "order by price "
         return self.fetch(stmt)
 
-    def seatsAvailable(self, flightno):
+    def seatsAvailable(self, flightno, price):
         """
         Check if there are any seats 
         available in a given scheduled flight
-        """
-        return True
 
-    def addBooking(flightno, passemail):
-        pass
+        self.db.seatsAvailable("AC158",2000.0)
+        """
+        stmt = "select seats " + \
+        "from available_flights " + \
+        "where flightno='%s' and price='%s'" % (flightno,str(price))
+        return True if self.fetch(stmt)[0][0] > 0 else False
+
+    def listFareInfoForFlight(self, flightno):
+        stmt = "select * " + \
+        "from flight_fares " + \
+        "where flightno='%s'" % (flightno)
+        
+        return self.fetch(stmt)
+        
+    def getNextTicketNumber(self):
+        stmt = "select max(tno) from tickets"
+        tno = self.fetch(stmt)
+        print("The tno length "+str(len(tno)))
+        print(int(tno[0][0]) + 1)
+        return int(tno[0][0]) + 1
+
+    def getListOfSeatNames(self, flightno):
+        stmt = "select seat " + \
+        "from bookings " + \
+        "where flightno='%s'" % (flightno)
+        
+        return self.fetch(stmt)
+        
+
+    def getSeatNameForFlight(self, flightno):
+        # ref http://stackoverflow.com/questions/3996904/generate-random-integers-between-0-and-9
+        listOfSeatNames = self.getListOfSeatNames(flightno)
+        seatName = listOfSeatNames[0] if len(listOfSeatNames) > 0 else "1A"
+        while(seatName in listOfSeatNames):
+            seatName = randint(1,20)
+            letter = randint(1,3)
+            if letter == 1:
+                seatName + "A"
+            elif letter == 2:
+                seatName + "B"            
+            else:
+                seatName + "C"
+        return seatName
+
+    def addBooking(self, name, email, flightno, price, dep_date):
+        """
+        Add a new booking to the DB
+        
+        """
+        #FIXME: assumes seat name is randomly 
+        # generated number from 1-20 inclusive
+        # with either A, B or C attached to the end
+
+        # 
+
+        tno = self.getNextTicketNumber()
+        fares = self.listFareInfoForFlight(flightno)
+        for i, f in enumerate(fares):
+            print(i,f)
+        
+        option = input("Pick Fare Type: ")
+        fare = fares[int(option)][1] # get fare type
+        fare_price = fares[int(option)][3] # get fare price
+        seat = self.getSeatNameForFlight(flightno)
+        if (price != fare_price):
+            price = fare_price
+            print("Your new price is: " + str(price))
+
+        stmt = "INSERT INTO tickets " + \
+        "VALUES ('%d', '%s', '%s', '%d')" % (tno, name, email, price)
+        self.update(stmt)
+
+
+        stmt = "INSERT INTO bookings " + \
+        "VALUES ('%d', '%s', '%s',to_date('%s','DD-MON-YYYY'),'%s')" % (tno, flightno, fare, dep_date, seat)
+        self.update(stmt)
+
+
+        return tno
 
     def deleteBooking(self, ticketno):
         """
