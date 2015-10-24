@@ -126,8 +126,8 @@ class DB():
     def getNextTicketNumber(self):
         stmt = "select max(tno) from tickets"
         tno = self.fetch(stmt)
-        print("The tno length "+str(len(tno)))
-        print(int(tno[0][0]) + 1)
+        #print("The tno length "+str(len(tno)))
+        #print(int(tno[0][0]) + 1)
         return int(tno[0][0]) + 1
 
     def getListOfSeatNames(self, flightno):
@@ -135,6 +135,22 @@ class DB():
         "from bookings " + \
         "where flightno='%s'" % (flightno)
         
+        return self.fetch(stmt)
+        
+
+    def getListOfBookings(self, email):
+        stmt = "select t.tno, name, dep_date, paid_price " + \
+        "from bookings b, tickets t " + \
+        "where t.tno = b.tno and email='%s'" % (email)      
+
+        return self.fetch(stmt)
+
+    def getInfoAboutBooking(self, email, tno):
+        stmt = "select * " + \
+        "from bookings b, tickets t " + \
+        "where t.tno = b.tno and " + \
+        "email = '%s' and t.tno = '%d'" %(email, tno)
+
         return self.fetch(stmt)
         
 

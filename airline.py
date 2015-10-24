@@ -186,7 +186,20 @@ class UI():
         Save the list of bookings in
         self.bookings and print it
         """
-        pass
+        self.bookings = self.db.getListOfBookings(self.email)
+        if not self.bookings:
+            print("You haven't selected bookings yet")
+            return
+
+        for i, f in enumerate(self.bookings):
+            print(i, f)
+        option = input("Choose booking for more info: ")
+        tno = self.bookings[int(option)][0]
+        print(tno)
+        tnoInfo = self.db.getInfoAboutBooking(self.email, int(tno))
+        
+        print(tnoInfo)        
+        return
 
     def printBookings(self):
         if not self.bookings:
