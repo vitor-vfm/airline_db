@@ -86,6 +86,60 @@ class DB():
                 "OR UPPER(name) LIKE '%{}%' ".format(airport)
         return self.fetch(stmt)
 
+    def getRoundTrips(self, sourceForward, destForward, departure, return_date):
+        """
+        Retrieve all round trips (or pair of flights) available
+        with the specifications
+        """
+        sourceBackward = destForward
+        destBackward = sourceForward
+
+        #####
+        # beginning portion
+        #####
+        stmt = "select t1.flightno1 as forwardFlight1, t1.flightno2 as forwardFlight2, t1.dep_time, t1.src, t1.dst, t1.seats1, t1.seats2, t2.flightno1 as backwardFlight1, t2.flightno2 as backwardFlight2, t2.dep_time, t2.src, t2.dst, t2.seats1, t2.seats2, (t1.price + t2.price) as Price from ("
+        
+
+
+        # for the forward flight info
+
+        stmt += "(select flightno1, flightno2, src, dst, layover, price, to_char(dep_time, 'HH:MI AM') as dep_time, to_char(arr_time, 'HH:MI AM') as arr_time, 1 nCons, seats1, seats2 " + \
+                "from connections " + \
+                "where to_char(dep_date,'DD-Mon-YYYY')='%s' and src='%s' and dst='%s') " % (departure, sourceForward, destForward) + \
+                "union " + \
+                "(select flightno flightno1, null flightno2, src, dst,  0 layover, price, to_char(dep_time, 'HH:MI AM') as dep_time, to_char(arr_time, 'HH:MI AM') as arr_time, 0 nCons, seats seats1, null seats2 " + \
+                "from available_flights " + \
+                "where to_char(dep_date,'DD-Mon-YYYY')='%s' and src='%s' and dst='%s') " % (departure, sourceForward, destForward)
+        stmt += "order by nCons, price "
+
+        #####
+        # middle portion
+        #####
+        stmt += ") t1, ("
+        
+
+        # for the backwards flight info
+
+        stmt += "(select flightno1, flightno2, src, dst, layover, price, to_char(dep_time, 'HH:MI AM') as dep_time, to_char(arr_time, 'HH:MI AM') as arr_time, 1 nCons, seats1, seats2 " + \
+                "from connections " + \
+                "where to_char(dep_date,'DD-Mon-YYYY')='%s' and src='%s' and dst='%s') " % (return_date, sourceBackward, destBackward) + \
+                "union " + \
+                "(select flightno flightno1, null flightno2, src, dst,  0 layover, price, to_char(dep_time, 'HH:MI AM') as dep_time, to_char(arr_time, 'HH:MI AM') as arr_time, 0 nCons, seats seats1, null seats2 " + \
+                "from available_flights " + \
+                "where to_char(dep_date,'DD-Mon-YYYY')='%s' and src='%s' and dst='%s') " % (return_date, sourceBackward, destBackward)
+        stmt += "order by nCons, price "
+
+
+        #####
+        # end portion
+        #####
+        stmt += ") t2 order by Price"
+        
+
+
+        return self.fetch(stmt)
+
+
     def getFlights(self, source, dest, departure, sortByCons=False):
         """
         Retrieve all flights (or pair of flights) available
@@ -93,11 +147,31 @@ class DB():
         """
         stmt = "(select flightno1, flightno2, src, dst, layover, price, to_char(dep_time, 'HH:MI AM'), to_char(arr_time, 'HH:MI AM'), 1 nCons, seats1, seats2 " + \
                 "from connections " + \
-                "where to_char(dep_date,'YYYY-MM-DD')='%s' and src='%s' and dst='%s') " % (departure, source, dest) + \
+                "where to_char(dep_date,'DD-Mon-YYYY')='%s' and src='%s' and dst='%s') " % (departure, source, dest) + \
                 "union " + \
                 "(select flightno flightno1, null flightno2, src, dst,  0 layover, price, to_char(dep_time, 'HH:MI AM'), to_char(arr_time, 'HH:MI AM'), 0 nCons, seats seats1, null seats2 " + \
                 "from available_flights " + \
-                "where to_char(dep_date,'YYYY-MM-DD')='%s' and src='%s' and dst='%s') " % (departure, source, dest)
+                "where to_char(dep_date,'DD-Mon-YYYY')='%s' and src='%s' and dst='%s') " % (departure, source, dest)
+        if sortByCons:
+            stmt += "order by nCons, price "
+        else:
+            stmt += "order by price "
+        return self.fetch(stmt)
+
+
+
+    def getFlights(self, source, dest, departure, sortByCons=False):
+        """
+        Retrieve all flights (or pair of flights) available
+        with the specifications
+        """
+        stmt = "(select flightno1, flightno2, src, dst, layover, price, to_char(dep_time, 'HH:MI AM'), to_char(arr_time, 'HH:MI AM'), 1 nCons, seats1, seats2 " + \
+                "from connections " + \
+                "where to_char(dep_date,'DD-Mon-YYYY')='%s' and src='%s' and dst='%s') " % (departure, source, dest) + \
+                "union " + \
+                "(select flightno flightno1, null flightno2, src, dst,  0 layover, price, to_char(dep_time, 'HH:MI AM'), to_char(arr_time, 'HH:MI AM'), 0 nCons, seats seats1, null seats2 " + \
+                "from available_flights " + \
+                "where to_char(dep_date,'DD-Mon-YYYY')='%s' and src='%s' and dst='%s') " % (departure, source, dest)
         if sortByCons:
             stmt += "order by nCons, price "
         else:
@@ -159,7 +233,7 @@ class DB():
         listOfSeatNames = self.getListOfSeatNames(flightno)
         seatName = listOfSeatNames[0] if len(listOfSeatNames) > 0 else "1A"
         while(seatName in listOfSeatNames):
-            seatName = randint(1,20)
+            seatName = str(randint(1,20))
             letter = randint(1,3)
             if letter == 1:
                 seatName + "A"
@@ -178,7 +252,6 @@ class DB():
         # generated number from 1-20 inclusive
         # with either A, B or C attached to the end
 
-        # 
 
         tno = self.getNextTicketNumber()
         fares = self.listFareInfoForFlight(flightno)
@@ -260,7 +333,7 @@ class DB():
         """
         stmt = "SELECT email FROM airline_agents " + \
                 "WHERE email='%s' " % email
-        return self.fetch(stmt) != []
+        return True if self.fetch(stmt) != [] else False
 
     def updateLastLogin(self, email):
         """
