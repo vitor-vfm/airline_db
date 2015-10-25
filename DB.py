@@ -105,11 +105,11 @@ class DB():
 
         stmt += "(select flightno1, flightno2, src, dst, layover, price, to_char(dep_time, 'HH:MI AM') as dep_time, to_char(arr_time, 'HH:MI AM') as arr_time, 1 nCons, seats1, seats2 " + \
                 "from connections " + \
-                "where to_char(dep_date,'DD-Mon-YYYY')='%s' and src='%s' and dst='%s') " % (departure, sourceForward, destForward) + \
+                "where to_char(dep_date,'DD-MON-YYYY')='%s' and src='%s' and dst='%s') " % (departure, sourceForward, destForward) + \
                 "union " + \
                 "(select flightno flightno1, null flightno2, src, dst,  0 layover, price, to_char(dep_time, 'HH:MI AM') as dep_time, to_char(arr_time, 'HH:MI AM') as arr_time, 0 nCons, seats seats1, null seats2 " + \
                 "from available_flights " + \
-                "where to_char(dep_date,'DD-Mon-YYYY')='%s' and src='%s' and dst='%s') " % (departure, sourceForward, destForward)
+                "where to_char(dep_date,'DD-MON-YYYY')='%s' and src='%s' and dst='%s') " % (departure, sourceForward, destForward)
         stmt += "order by nCons, price "
 
         #####
@@ -122,11 +122,11 @@ class DB():
 
         stmt += "(select flightno1, flightno2, src, dst, layover, price, to_char(dep_time, 'HH:MI AM') as dep_time, to_char(arr_time, 'HH:MI AM') as arr_time, 1 nCons, seats1, seats2 " + \
                 "from connections " + \
-                "where to_char(dep_date,'DD-Mon-YYYY')='%s' and src='%s' and dst='%s') " % (return_date, sourceBackward, destBackward) + \
+                "where to_char(dep_date,'DD-MON-YYYY')='%s' and src='%s' and dst='%s') " % (return_date, sourceBackward, destBackward) + \
                 "union " + \
                 "(select flightno flightno1, null flightno2, src, dst,  0 layover, price, to_char(dep_time, 'HH:MI AM') as dep_time, to_char(arr_time, 'HH:MI AM') as arr_time, 0 nCons, seats seats1, null seats2 " + \
                 "from available_flights " + \
-                "where to_char(dep_date,'DD-Mon-YYYY')='%s' and src='%s' and dst='%s') " % (return_date, sourceBackward, destBackward)
+                "where to_char(dep_date,'DD-MON-YYYY')='%s' and src='%s' and dst='%s') " % (return_date, sourceBackward, destBackward)
         stmt += "order by nCons, price "
 
 
@@ -147,11 +147,11 @@ class DB():
         """
         stmt = "(select flightno1, flightno2, src, dst, layover, price, to_char(dep_time, 'HH:MI AM'), to_char(arr_time, 'HH:MI AM'), 1 nCons, seats1, seats2 " + \
                 "from connections " + \
-                "where to_char(dep_date,'DD-Mon-YYYY')='%s' and src='%s' and dst='%s') " % (departure, source, dest) + \
+                "where to_char(dep_date,'DD-MON-YYYY')='%s' and src='%s' and dst='%s') " % (departure, source, dest) + \
                 "union " + \
                 "(select flightno flightno1, null flightno2, src, dst,  0 layover, price, to_char(dep_time, 'HH:MI AM'), to_char(arr_time, 'HH:MI AM'), 0 nCons, seats seats1, null seats2 " + \
                 "from available_flights " + \
-                "where to_char(dep_date,'DD-Mon-YYYY')='%s' and src='%s' and dst='%s') " % (departure, source, dest)
+                "where to_char(dep_date,'DD-MON-YYYY')='%s' and src='%s' and dst='%s') " % (departure, source, dest)
         if sortByCons:
             stmt += "order by nCons, price "
         else:
@@ -167,11 +167,11 @@ class DB():
         """
         stmt = "(select flightno1, flightno2, src, dst, layover, price, to_char(dep_time, 'HH:MI AM'), to_char(arr_time, 'HH:MI AM'), 1 nCons, seats1, seats2 " + \
                 "from connections " + \
-                "where to_char(dep_date,'DD-Mon-YYYY')='%s' and src='%s' and dst='%s') " % (departure, source, dest) + \
+                "where to_char(dep_date,'DD-MON-YYYY')='%s' and src='%s' and dst='%s') " % (departure, source, dest) + \
                 "union " + \
                 "(select flightno flightno1, null flightno2, src, dst,  0 layover, price, to_char(dep_time, 'HH:MI AM'), to_char(arr_time, 'HH:MI AM'), 0 nCons, seats seats1, null seats2 " + \
                 "from available_flights " + \
-                "where to_char(dep_date,'DD-Mon-YYYY')='%s' and src='%s' and dst='%s') " % (departure, source, dest)
+                "where to_char(dep_date,'DD-MON-YYYY')='%s' and src='%s' and dst='%s') " % (departure, source, dest)
         if sortByCons:
             stmt += "order by nCons, price "
         else:
@@ -304,7 +304,7 @@ class DB():
         stmt = "UPDATE sch_flights " + \
                 "SET %s=to_date('%s', 'YYYY-MM-DD HH:MI') " % (col, actualTime) + \
                 "WHERE flightno='%s' " % flightno + \
-                "AND to_char(dep_date, 'YYYY-MM-DD')='%s' " % dep_date
+                "AND to_char(dep_date, 'DD-MON-YYYY')='%s' " % dep_date
         self.update(stmt)
 
     def getUser(self, email):

@@ -1,6 +1,7 @@
 #! /usr/bin/python3
 
 import sys
+import re
 from DB import DB
 
 class UI():
@@ -73,6 +74,20 @@ class UI():
         print("Logged out")
         self.startScreen()
 
+    def getDate(self, prompt):
+        """
+        Receive a date from the user
+        and check for errors
+        """
+        pattern = r"^[0-9]{2}-[A-Z]{3}-[0-9]{4}$"
+        while True:
+            date = input(prompt).upper()
+            if re.match(pattern, date):
+                break
+            else:
+                print("Not a valid date")
+        return date
+
 
     def userOptions(self):
 
@@ -137,8 +152,8 @@ class UI():
         """
         Ask the user for input and search for corresponding flight
         """
-        self.departure = input("Enter departure date (DD-Mon-YYYY): ")
-        self.return_date = input("Enter return  date (DD-Mon-YYYY): ")
+        self.departure = self.getDate("Enter departure date (DD-Mon-YYYY): ")
+        self.return_date = self.getDate("Enter return date (DD-Mon-YYYY): ")
         sourceForward = self.validateAirport(input("Enter source airport: "))
         destForward = self.validateAirport(input("Enter destination airport: "))
         
@@ -156,7 +171,7 @@ class UI():
         """
         Ask the user for input and search for corresponding flight
         """
-        self.departure = input("Enter departure date (DD-Mon-YYYY): ")
+        self.departure = self.getDate("Enter departure date (DD-Mon-YYYY): ")
         source = self.validateAirport(input("Enter source airport: "))
         dest = self.validateAirport(input("Enter destination airport: "))
         option = input("Do you want to sort by connections (y/n)? ")
@@ -311,7 +326,6 @@ class UI():
         and cancel it
         """
         if not self.bookings:
-            # TODO: make this more usable
             print("Please list bookings first")
             self.userOptions()
         else:
@@ -343,7 +357,7 @@ class UI():
         of a given flight
         """
         flightno = input("Inform which flight arrived: ").upper()
-        dep_date = input("Inform the flight's scheduled arrival day (YYYY-MM-DD): ")
+        dep_date = self.getDate("Inform the flight's scheduled arrival day (YYYY-MM-DD): ")
         actual_arrival = input("Inform date and time of arrival (YYYY-MM-DD HH:MI): ")
         self.db.recordActualTime(flightno, dep_date, actual_arrival, departure=False)
         print("Done")
