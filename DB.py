@@ -30,12 +30,8 @@ class DB():
         Execute a SQL SELECT statement
         """
         cur = self.con.cursor()
-        print("inside fetch")
-        print("stmt:")
-        print(stmt)
         cur.execute(stmt)
         res = cur.fetchall()
-        print("res", res)
         cur.close()
         return res
 
@@ -44,9 +40,6 @@ class DB():
         Execute a SQL INSERT or UPDATE statement
         """
         cur = self.con.cursor()
-        print("inside update")
-        print("stmt:")
-        print(stmt)
         cur.execute(stmt)
         self.con.commit()
         cur.close()
@@ -158,26 +151,6 @@ class DB():
             stmt += "order by price "
         return self.fetch(stmt)
 
-
-
-    def getFlights(self, source, dest, departure, sortByCons=False):
-        """
-        Retrieve all flights (or pair of flights) available
-        with the specifications
-        """
-        stmt = "(select flightno1, flightno2, src, dst, layover, price, to_char(dep_time, 'HH:MI AM'), to_char(arr_time, 'HH:MI AM'), 1 nCons, seats1, seats2 " + \
-                "from connections " + \
-                "where to_char(dep_date,'DD-MON-YYYY')='%s' and src='%s' and dst='%s') " % (departure, source, dest) + \
-                "union " + \
-                "(select flightno flightno1, null flightno2, src, dst,  0 layover, price, to_char(dep_time, 'HH:MI AM'), to_char(arr_time, 'HH:MI AM'), 0 nCons, seats seats1, null seats2 " + \
-                "from available_flights " + \
-                "where to_char(dep_date,'DD-MON-YYYY')='%s' and src='%s' and dst='%s') " % (departure, source, dest)
-        if sortByCons:
-            stmt += "order by nCons, price "
-        else:
-            stmt += "order by price "
-        return self.fetch(stmt)
-
     def seatsAvailable(self, flightno, price):
         """
         Check if there are any seats 
@@ -200,8 +173,6 @@ class DB():
     def getNextTicketNumber(self):
         stmt = "select max(tno) from tickets"
         tno = self.fetch(stmt)
-        #print("The tno length "+str(len(tno)))
-        #print(int(tno[0][0]) + 1)
         return int(tno[0][0]) + 1
 
     def getListOfSeatNames(self, flightno):

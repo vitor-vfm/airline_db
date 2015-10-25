@@ -157,15 +157,15 @@ class UI():
 
     def searchForRoundTrips(self):
         """
-        Ask the user for input and search for corresponding flight
+        Look for round trips that in the dates and locations
+        specified by the user
+
+        Save them in an attribute for later reference
         """
         self.departure = self.getDate("Enter departure date (DD-Mon-YYYY): ")
         self.return_date = self.getDate("Enter return date (DD-Mon-YYYY): ")
         sourceForward = self.validateAirport(input("Enter source airport: "))
         destForward = self.validateAirport(input("Enter destination airport: "))
-        
-        
-        #option = input("Do you want to sort by connections (y/n)? ")
         
         self.roundTrips = self.db.getRoundTrips(sourceForward, destForward, self.departure, self.return_date)
 
@@ -198,7 +198,7 @@ class UI():
             print("Sorry, there isn't any flight available for you")
             return
 
-        print("(forwardFlight1, forwardFlight2, departure_time, forwardSource, forwardDestination, forwardFlight1Seats1, forwardFlight1Seats2 backwardFlight1, backwardFlight2, departure_time, backwardSource, backwardDestination, backwardFlightSeats1, backwardFlightSeats2, price")
+        print("(forwardFlight1, forwardFlight2, departure_time, forwardSource, forwardDestination, forwardFlight1Seats1, forwardFlight1Seats2 backwardFlight1, backwardFlight2, departure_time, backwardSource, backwardDestination, backwardFlightSeats1, backwardFlightSeats2, price)")
         for i, f in enumerate(self.roundTrips):
             print(i, f)
 
@@ -217,8 +217,6 @@ class UI():
                 "connections, seats in flight 1, seats in flight 2)")
         for i, f in enumerate(self.flights):
             print(i, f)
-
-# makeBookingForRoundTrips()    
 
     def makeBookingForRoundTrips(self):
         # FIXME: add error checking, and support for flight2
@@ -250,7 +248,7 @@ class UI():
 
         for flightno, price, seats, dep_date in [tripInfo1, tripInfo2, tripInfo3, tripInfo4]:   
             if flightno == None or seats == None:
-                print("Only single connection. This flight doesn't exist.")
+                print("Single connection")
                 continue
 
             if int(seats) == 0:
@@ -285,7 +283,7 @@ class UI():
 
         for flightno, price, seats in [flightInfo1, flightInfo2]:   
             if flightno == None or seats == None:
-                print("Only single connection. This flight doesn't exist.")
+                print("Single connection")
                 continue
 
             if int(seats) == 0:
@@ -314,7 +312,7 @@ class UI():
         for i, f in enumerate(self.bookings):
             print(i, f)
 
-        option = input("Would like more info about any of the bookings (y/n)?")
+        option = input("Would like more info about any of the bookings (y/n)? ")
         if option.lower() == "y":
             option = -1
             while option not in range(len(self.bookings)):
@@ -349,7 +347,7 @@ class UI():
             self.printBookings()
             option = -1
             while option not in range(len(self.bookings)):
-                option = int(input("Which one would you like to cancel?"))
+                option = int(input("Which one would you like to cancel? "))
             ticketno = self.bookings[option][0]
             self.db.deleteBooking(ticketno)
             print("Done")
