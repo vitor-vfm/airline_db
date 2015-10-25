@@ -1,0 +1,57 @@
+
+a) General Overview
+
+   The objective of the project was to implement a system responsible for providing access to an airline system. Two types of users are meant to use the application, namely users and airline agents. Users consist of airline customers who can use the application to do either of the following tasks:
+   - Search for flights
+   - Search for round trips
+   - Make a booking
+   - Make a booking for a round trip
+   - List existing bookings
+   - Cancel a booking
+
+   As for airline agents, the system specifies that they should be able to do all of the above as well as the following tasks:
+   - Record a flight departure
+   - Record a flight arrival
+
+   Depending on the tasks, the system either queries the sql for the required information or updates the database to reflect changes introduced by users. 
+
+   User Guide
+
+   - Searching for flights 
+     - This task queries the database for the flights that match the specifications requested by the user. The system prompts the user for a source, destination and a departure date. The system than retrieves scheduled flights from the database that correspond to the values requested by the user.
+
+   - Searching for round trips
+     - This task is similar to searching for regular flights except that it also prompts users for a return date. The return date is used to find round trips that the user can book.
+
+   - Making a booking  
+     - After seeing the available flights for the specified source, destination and departure date, the user can choose to book one of the flights shown. The flights are displayed with a corresponding number that the user can choose when deciding to make a booking. When making a booking, the system gets the name of the passenger and proceeds to check if the user is registered as passenger in the database. If not, the user is prompted for a country of residence and then added to the passenger database. If the passenger chooses to book a flight that has more than one flight, the system will then make a ticket and a booking for each flight, otherwise the system simply registers a single ticket and booking for the single flight. 
+
+   - Making a booking for a round trip
+     - Booking a round trip follows a similar procedure to booking a regular flight, except that the system makes a booking for each flight in the trip, which can be up to four different flights depending on the number of connections the passenger chooses to take.
+
+   - Listing existing bookings
+     - In the case that a user wishes to see his or her current bookings, they can simply select this option to get a brief highlight of their current bookings. This option has the added feature of providing extra details on a particular booking if the user so wishes. 
+
+   - Canceling a booking
+     - If, for whatever reason, a user decides to cancel one of his or her bookings, they can simply select this option. Choosing so, will delete the ticket and booking corresponding to the one the user indicated.
+
+   - Recording a flight departure/arrival
+     - Airline agents have the extra option of recording flight departures or arrivals. The database contains fields for recording actual arrival time and actual departure time. Only airline agents can enter information pertaining to those fields.
+
+         
+b) 
+
+c)
+
+d) The workload was divided mainly based on features. The features, along with implementor as well as time spent on it, is presented below:
+   Search for flights. -- Vitor
+   Make a booking. -- Umair (3 hours)
+   List exiting bookings. -- Umair (1 hours)
+   Cancel a booking. -- Vitor
+   Logout. -- Trivial
+   Record a flight departure. -- Vitor
+   Record a flight arrival. -- Vitor
+   Support search and booking of round-trips. -- Umair (4 hours)
+   
+   Communication between the partners was key in successfully completing the project. Shortly after being assigned the project, we sat down and divided up the work and ensured that communication between us was easy and accessible. On top of that, our main method of maintaining coordination during the developement was choosing to use GitHub to manage our progress. This allowed us to avoid conflicts in project versions and keep both of ourselves updated on where the project stood as we both made our way through the project. 
+      
