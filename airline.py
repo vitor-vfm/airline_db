@@ -1,6 +1,7 @@
 #! /usr/bin/python3
 
 import sys
+from subprocess import call
 import re
 from DB import DB
 
@@ -12,10 +13,16 @@ class UI():
     """
 
     def __init__(self):
-        self.db = DB()
         self.flights = []
         self.bookings = []
         self.roundTrips = []
+
+        try:
+            self.db = DB()
+        except:
+            print("It seems that there is no credentials.txt file. Please create one")
+            sys.exit()
+
         ###### test booking for 'make a booking feature'
         # checked and it works
         # self.db.addBooking("Uma", "s@test", "AC158", "100", "22-Dec-2015")
