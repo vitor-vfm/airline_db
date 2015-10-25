@@ -255,6 +255,8 @@ class UI():
                 print("Success.")
                 print("Your ticket number is ", ticket)
 
+        self.userOptions()
+
 
     def makeBooking(self):
         # FIXME: add error checking, and support for flight2
@@ -288,8 +290,7 @@ class UI():
                 print("Success.")
                 print("Your ticket number is ", ticket)
 
-            
-            
+        self.userOptions()
 
     def listBookings(self):
         """
@@ -298,22 +299,30 @@ class UI():
         """
         self.bookings = self.db.getListOfBookings(self.email)
         if not self.bookings:
-            print("You haven't selected bookings yet")
-            return
+            print("No bookings")
+            self.userOptions()
 
+        print("(ticket number, name, departure_date, " +
+                "paid price)")
         for i, f in enumerate(self.bookings):
             print(i, f)
-        option = input("Choose booking for more info: ")
-        tno = self.bookings[int(option)][0]
-        print(tno)
-        tnoInfo = self.db.getInfoAboutBooking(self.email, int(tno))
-        
-        print(tnoInfo)        
-        return
+
+        option = input("Would like more info about any of the bookings (y/n)?")
+        if option.lower() == "y":
+            option = -1
+            while option not in range(len(self.bookings)):
+                option = int(input("Choose one of the bookings for more info: "))
+            tno = self.bookings[option][0]
+            print(tno)
+            print("(ticket number, passenger, passenger email, paid price, flight, fare, departure date, seat)")
+            tnoInfo = self.db.getInfoAboutBooking(self.email, int(tno))
+            print(tnoInfo)        
+
+        self.userOptions()
 
     def printBookings(self):
         if not self.bookings:
-            print("You haven't selected bookings yet")
+            print("No bookings")
             return
 
         print("(ticket no, passenger, departure date, price)")
@@ -331,8 +340,10 @@ class UI():
         else:
             print("Here are your bookings")
             self.printBookings()
-            option = input("Which one would you like to cancel?")
-            ticketno = self.bookings[int(option)][0]
+            option = -1
+            while option not in range(len(self.bookings)):
+                option = int(input("Which one would you like to cancel?"))
+            ticketno = self.bookings[option][0]
             self.db.deleteBooking(ticketno)
             print("Done")
             self.userOptions()

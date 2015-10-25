@@ -213,14 +213,14 @@ class DB():
         
 
     def getListOfBookings(self, email):
-        stmt = "select t.tno, name, dep_date, paid_price " + \
+        stmt = "select t.tno, trim(name), to_char(dep_date), paid_price " + \
         "from bookings b, tickets t " + \
         "where t.tno = b.tno and email='%s'" % (email)      
 
         return self.fetch(stmt)
 
     def getInfoAboutBooking(self, email, tno):
-        stmt = "select * " + \
+        stmt = "select t.tno, trim(name), trim(email), paid_price, flightno, fare, to_char(dep_date), seat " + \
         "from bookings b, tickets t " + \
         "where t.tno = b.tno and " + \
         "email = '%s' and t.tno = '%d'" %(email, tno)
