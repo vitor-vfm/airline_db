@@ -221,7 +221,10 @@ class UI():
             print(i, f)
 
     def makeBookingForRoundTrips(self):
-        # FIXME: add error checking, and support for flight2
+        if not self.roundTrips:
+            print("Please search for a round trip before booking it.")
+            self.userOptions()
+            return
 
         option = input("Pick a round trip flight number: ")
         roundTripInfo = self.roundTrips[int(option)]
@@ -267,6 +270,11 @@ class UI():
 
     def makeBooking(self):
         # FIXME: add error checking, and support for flight2
+
+        if not self.flights:
+            print("Please search for a flight before booking it.")
+            self.userOptions()
+            return
 
         option = input("Pick a flight number: ")
         flightInfo = self.flights[int(option)]
