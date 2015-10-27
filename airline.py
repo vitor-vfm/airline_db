@@ -216,7 +216,7 @@ class UI():
 
         print("(flight 1, flight 2, source, destination, layover, " + \
                 "price, time of departure, time of arrival, number of " + \
-                "connections, seats in flight 1, seats in flight 2)")
+                "connections, seats in flight 1, seats in flight 2, departure date for flight 2)")
         for i, f in enumerate(self.flights):
             print(i, f)
 
@@ -240,15 +240,11 @@ class UI():
         
         # forward
         tripInfo1 = [roundTripInfo[0], roundTripInfo[14], roundTripInfo[5], self.departure]
-        # FIXME: we need to determine departure date of the second flight in the connection
-        # right now we just using original, user speicifed dep_date for both
-        tripInfo2 = [roundTripInfo[1], roundTripInfo[14], roundTripInfo[6], self.departure]
+        tripInfo2 = [roundTripInfo[1], roundTripInfo[14], roundTripInfo[6], roundTripInfo[-2]]
 
         # backward
         tripInfo3 = [roundTripInfo[7], roundTripInfo[14], roundTripInfo[12], self.return_date]
-        # FIXME: we need to determine departure date of the second flight in the connection
-        # right now we just using original, user speicifed return_date for both
-        tripInfo4 = [roundTripInfo[8], roundTripInfo[14], roundTripInfo[13], self.return_date]
+        tripInfo4 = [roundTripInfo[8], roundTripInfo[14], roundTripInfo[13], roundTripInfo[-1]]
 
 
         for flightno, price, seats, dep_date in [tripInfo1, tripInfo2, tripInfo3, tripInfo4]:   
@@ -269,7 +265,6 @@ class UI():
 
 
     def makeBooking(self):
-        # FIXME: add error checking, and support for flight2
 
         if not self.flights:
             print("Please search for a flight before booking it.")
@@ -288,10 +283,10 @@ class UI():
         
 
         # corresponds to flightno, price, seats 
-        flightInfo1 = [flightInfo[0], flightInfo[5], flightInfo[9]]
-        flightInfo2 = [flightInfo[1], flightInfo[5], flightInfo[10]]
+        flightInfo1 = [flightInfo[0], flightInfo[5], flightInfo[9], self.departure]
+        flightInfo2 = [flightInfo[1], flightInfo[5], flightInfo[10], flightInfo[-1]]
 
-        for flightno, price, seats in [flightInfo1, flightInfo2]:   
+        for flightno, price, seats, departure in [flightInfo1, flightInfo2]:   
             if flightno == None or seats == None:
                 print("Single connection")
                 continue
@@ -300,7 +295,7 @@ class UI():
                 print("No seats available.")
                 return
 
-            ticket = self.db.addBooking(name, self.email, flightno, price, self.departure)
+            ticket = self.db.addBooking(name, self.email, flightno, price, departure)
             if ticket:
                 print("Success.")
                 print("Your ticket number is ", ticket)

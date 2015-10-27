@@ -1,5 +1,6 @@
 import cx_Oracle as Or
 from random import randint
+import sys
 
 class DB():
     """
@@ -39,8 +40,6 @@ class DB():
         """
         Execute a SQL INSERT or UPDATE statement
         """
-        print('inside update')
-        print(stmt)
         cur = self.con.cursor()
         cur.execute(stmt)
         self.con.commit()
@@ -92,17 +91,17 @@ class DB():
         #####
         # beginning portion
         #####
-        stmt = "select t1.flightno1 as forwardFlight1, t1.flightno2 as forwardFlight2, t1.dep_time, t1.src, t1.dst, t1.seats1, t1.seats2, t2.flightno1 as backwardFlight1, t2.flightno2 as backwardFlight2, t2.dep_time, t2.src, t2.dst, t2.seats1, t2.seats2, (t1.price + t2.price) as Price from ("
+        stmt = "select t1.flightno1 as forwardFlight1, t1.flightno2 as forwardFlight2, t1.dep_time, t1.src, t1.dst, t1.seats1, t1.seats2, t2.flightno1 as backwardFlight1, t2.flightno2 as backwardFlight2, t2.dep_time, t2.src, t2.dst, t2.seats1, t2.seats2, (t1.price + t2.price) as Price, t1.dep_date2, t2.dep_date2 from ("
         
 
 
         # for the forward flight info
 
-        stmt += "(select flightno1, flightno2, src, dst, layover, price, to_char(dep_time, 'HH:MI AM') as dep_time, to_char(arr_time, 'HH:MI AM') as arr_time, 1 nCons, seats1, seats2 " + \
+        stmt += "(select flightno1, flightno2, src, dst, layover, price, to_char(dep_time, 'HH:MI AM') as dep_time, to_char(arr_time, 'HH:MI AM') as arr_time, 1 nCons, seats1, seats2, dep_date2 " + \
                 "from connections " + \
                 "where to_char(dep_date,'DD-MON-YYYY')='%s' and src='%s' and dst='%s') " % (departure, sourceForward, destForward) + \
                 "union " + \
-                "(select flightno flightno1, null flightno2, src, dst,  0 layover, price, to_char(dep_time, 'HH:MI AM') as dep_time, to_char(arr_time, 'HH:MI AM') as arr_time, 0 nCons, seats seats1, null seats2 " + \
+                "(select flightno flightno1, null flightno2, src, dst,  0 layover, price, to_char(dep_time, 'HH:MI AM') as dep_time, to_char(arr_time, 'HH:MI AM') as arr_time, 0 nCons, seats seats1, null seats2, null dep_date2 " + \
                 "from available_flights " + \
                 "where to_char(dep_date,'DD-MON-YYYY')='%s' and src='%s' and dst='%s') " % (departure, sourceForward, destForward)
         stmt += "order by nCons, price "
@@ -115,11 +114,11 @@ class DB():
 
         # for the backwards flight info
 
-        stmt += "(select flightno1, flightno2, src, dst, layover, price, to_char(dep_time, 'HH:MI AM') as dep_time, to_char(arr_time, 'HH:MI AM') as arr_time, 1 nCons, seats1, seats2 " + \
+        stmt += "(select flightno1, flightno2, src, dst, layover, price, to_char(dep_time, 'HH:MI AM') as dep_time, to_char(arr_time, 'HH:MI AM') as arr_time, 1 nCons, seats1, seats2, dep_date2 " + \
                 "from connections " + \
                 "where to_char(dep_date,'DD-MON-YYYY')='%s' and src='%s' and dst='%s') " % (return_date, sourceBackward, destBackward) + \
                 "union " + \
-                "(select flightno flightno1, null flightno2, src, dst,  0 layover, price, to_char(dep_time, 'HH:MI AM') as dep_time, to_char(arr_time, 'HH:MI AM') as arr_time, 0 nCons, seats seats1, null seats2 " + \
+                "(select flightno flightno1, null flightno2, src, dst,  0 layover, price, to_char(dep_time, 'HH:MI AM') as dep_time, to_char(arr_time, 'HH:MI AM') as arr_time, 0 nCons, seats seats1, null seats2, null dep_date2 " + \
                 "from available_flights " + \
                 "where to_char(dep_date,'DD-MON-YYYY')='%s' and src='%s' and dst='%s') " % (return_date, sourceBackward, destBackward)
         stmt += "order by nCons, price "
@@ -129,8 +128,6 @@ class DB():
         # end portion
         #####
         stmt += ") t2 order by Price"
-        
-
 
         return self.fetch(stmt)
 
@@ -140,11 +137,11 @@ class DB():
         Retrieve all flights (or pair of flights) available
         with the specifications
         """
-        stmt = "(select flightno1, flightno2, src, dst, layover, price, to_char(dep_time, 'HH:MI AM'), to_char(arr_time, 'HH:MI AM'), 1 nCons, seats1, seats2 " + \
+        stmt = "(select flightno1, flightno2, src, dst, layover, price, to_char(dep_time, 'HH:MI AM'), to_char(arr_time, 'HH:MI AM'), 1 nCons, seats1, seats2, dep_date2 " + \
                 "from connections " + \
                 "where to_char(dep_date,'DD-MON-YYYY')='%s' and src='%s' and dst='%s') " % (departure, source, dest) + \
                 "union " + \
-                "(select flightno flightno1, null flightno2, src, dst,  0 layover, price, to_char(dep_time, 'HH:MI AM'), to_char(arr_time, 'HH:MI AM'), 0 nCons, seats seats1, null seats2 " + \
+                "(select flightno flightno1, null flightno2, src, dst,  0 layover, price, to_char(dep_time, 'HH:MI AM'), to_char(arr_time, 'HH:MI AM'), 0 nCons, seats seats1, null seats2, null dep_date2 " + \
                 "from available_flights " + \
                 "where to_char(dep_date,'DD-MON-YYYY')='%s' and src='%s' and dst='%s') " % (departure, source, dest)
         if sortByCons:
@@ -216,30 +213,28 @@ class DB():
                 seatName + "C"
         return seatName
 
-    def getFlightDate(self, flightno, dep_date):
+    def getFlightDate(self, flightno, seats, price):
         """
         Retrieve the date for a given flight
         in actual Date format (as opposed to string)
         """
-        print(flightno, 'flightno')
-        print(dep_date, 'dep_date')
         stmt = "SELECT dep_date " + \
-                "FROM sch_flights " + \
+                "FROM available_flights " + \
                 "WHERE flightno='%s' " % flightno + \
-                "AND to_char(dep_date, 'DD-MON-YYYY')='%s' " % dep_date
+                "AND seats='%s' " % str(seats) + \
+                "AND price='%s' " % str(int(price))
         res = self.fetch(stmt)
-        print(res)
-        return self.fetch(stmt)[0][0]
+        if res:
+            return self.fetch(stmt)[0][0]
+        else:
+            print("no flight found in getDate")
+            sys.exit()
 
     def addBooking(self, name, email, flightno, price, dep_date):
         """
         Add a new booking to the DB
         
         """
-        #FIXME: assumes seat name is randomly 
-        # generated number from 1-20 inclusive
-        # with either A, B or C attached to the end
-
 
         tno = self.getNextTicketNumber()
         fares = self.listFareInfoForFlight(flightno)
@@ -258,26 +253,24 @@ class DB():
         "VALUES ('%d', '%s', '%s', '%d')" % (tno, name, email, price)
         self.update(stmt)
 
-        dep_date = self.getFlightDate(flightno, dep_date)
+        stmt = "INSERT INTO bookings " + \
+        "VALUES ('%d', '%s', '%s',to_date('%s','DD-MON-YYYY'),'%s')" % (tno, flightno, fare, dep_date, seat)
+        self.update(stmt)
 
 #         stmt = "INSERT INTO bookings " + \
-#         "VALUES ('%d', '%s', '%s',to_date('%s','DD-MON-YYYY'),'%s')" % (tno, flightno, fare, dep_date, seat)
-#         self.update(stmt)
+#                 "VALUES(:tno, :flightno, :fare, :dep_date, :seat)"
+#         cur = self.con.cursor()
+#         cur.prepare(stmt) 
 
-        stmt = "INSERT INTO bookings " + \
-                "VALUES(:tno, :flightno, :fare, :dep_date, :seat)"
-        cur = self.con.cursor()
-        cur.prepare(stmt) 
-
-        binds = {
-                'tno' : tno,
-                'flightno' : flightno,
-                'fare' : fare,
-                'dep_date' : dep_date,
-                'seat' : seat,
-                }
-        cur.execute(None, binds)
-        self.con.commit()
+#         binds = {
+#                 'tno' : tno,
+#                 'flightno' : flightno,
+#                 'fare' : fare,
+#                 'dep_date' : dep_date,
+#                 'seat' : seat,
+#                 }
+#         cur.execute(None, binds)
+#         self.con.commit()
 
         return tno
 
