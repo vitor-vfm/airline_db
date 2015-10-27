@@ -39,6 +39,8 @@ class DB():
         """
         Execute a SQL INSERT or UPDATE statement
         """
+        print('inside update')
+        print(stmt)
         cur = self.con.cursor()
         cur.execute(stmt)
         self.con.commit()
@@ -214,6 +216,21 @@ class DB():
                 seatName + "C"
         return seatName
 
+    def getFlightDate(self, flightno, dep_date):
+        """
+        Retrieve the date for a given flight
+        in actual Date format (as opposed to string)
+        """
+        print(flightno, 'flightno')
+        print(dep_date, 'dep_date')
+        stmt = "SELECT dep_date " + \
+                "FROM sch_flights " + \
+                "WHERE flightno='%s' " % flightno + \
+                "AND to_char(dep_date, 'DD-MON-YYYY')='%s' " % dep_date
+        res = self.fetch(stmt)
+        print(res)
+        return self.fetch(stmt)[0][0]
+
     def addBooking(self, name, email, flightno, price, dep_date):
         """
         Add a new booking to the DB
@@ -241,11 +258,26 @@ class DB():
         "VALUES ('%d', '%s', '%s', '%d')" % (tno, name, email, price)
         self.update(stmt)
 
+        dep_date = self.getFlightDate(flightno, dep_date)
+
+#         stmt = "INSERT INTO bookings " + \
+#         "VALUES ('%d', '%s', '%s',to_date('%s','DD-MON-YYYY'),'%s')" % (tno, flightno, fare, dep_date, seat)
+#         self.update(stmt)
 
         stmt = "INSERT INTO bookings " + \
-        "VALUES ('%d', '%s', '%s',to_date('%s','DD-MON-YYYY'),'%s')" % (tno, flightno, fare, dep_date, seat)
-        self.update(stmt)
+                "VALUES(:tno, :flightno, :fare, :dep_date, :seat)"
+        cur = self.con.cursor()
+        cur.prepare(stmt) 
 
+        binds = {
+                'tno' : tno,
+                'flightno' : flightno,
+                'fare' : fare,
+                'dep_date' : dep_date,
+                'seat' : seat,
+                }
+        cur.execute(None, binds)
+        self.con.commit()
 
         return tno
 
@@ -259,9 +291,9 @@ class DB():
                     "WHERE tno='%s' " % ticketno
             self.update(stmt)
 
-    def flightExists(self, flightno):
+    def flightExists(self, flightno, dep_date):
         """
-        Given a flight number,
+        Given flight info,
         find out if there is a corresponding
         scheduled flight
 
@@ -269,7 +301,8 @@ class DB():
         """
         stmt = "SELECT flightno " + \
                 "FROM sch_flights " + \
-                "WHERE flightno='%s' " % flightno
+                "WHERE flightno='%s' " % flightno + \
+                "AND to_char(dep_date, 'DD-MON-YYYY')='%s' " % dep_date
         return (self.fetch(stmt) != [])
 
     def recordActualTime(self, flightno, dep_date, actualTime, departure):

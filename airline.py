@@ -369,11 +369,11 @@ class UI():
         of a given flight
         """
         flightno = input("Inform which flight departed: ").upper()
-        if not self.db.flightExists(flightno):
+        dep_date = self.getDate("Inform the flight's scheduled departure day (DD-MON-YYYY): ")
+        if not self.db.flightExists(flightno,dep_date):
             print("That is not a scheduled flight")
             self.userOptions()
         else:
-            dep_date = self.getDate("Inform the flight's scheduled departure day (DD-MON-YYYY): ")
             actual_departure = input("Inform date and time of departure " + \
                     "(DD-MON-YYYY HH:MI): ")
             self.db.recordActualTime(flightno, dep_date, actual_departure, departure=True)
@@ -387,12 +387,12 @@ class UI():
         of a given flight
         """
         flightno = input("Inform which flight arrived: ").upper()
+        dep_date = self.getDate("Inform the flight's scheduled departure day (DD-MON-YYYY): ")
 
-        if not self.db.flightExists(flightno):
+        if not self.db.flightExists(flightno,dep_date):
             print("That is not a scheduled flight")
             self.userOptions()
         else:
-            dep_date = self.getDate("Inform the flight's scheduled departure day (DD-MON-YYYY): ")
             actual_arrival = input("Inform date and time of arrival (DD-MON-YYYY HH:MI): ")
             self.db.recordActualTime(flightno, dep_date, actual_arrival, departure=False)
             print("Done")
