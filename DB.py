@@ -259,6 +259,19 @@ class DB():
                     "WHERE tno='%s' " % ticketno
             self.update(stmt)
 
+    def flightExists(self, flightno):
+        """
+        Given a flight number,
+        find out if there is a corresponding
+        scheduled flight
+
+        Returns a boolean
+        """
+        stmt = "SELECT flightno " + \
+                "FROM sch_flights " + \
+                "WHERE flightno='%s' " % flightno
+        return (self.fetch(stmt) != [])
+
     def recordActualTime(self, flightno, dep_date, actualTime, departure):
         """
         Update the actual arrival or departure 
@@ -273,7 +286,7 @@ class DB():
             col = 'act_arr_time'
 
         stmt = "UPDATE sch_flights " + \
-                "SET %s=to_date('%s', 'YYYY-MM-DD HH:MI') " % (col, actualTime) + \
+                "SET %s=to_date('%s', 'DD-MON-YYYY HH:MI') " % (col, actualTime) + \
                 "WHERE flightno='%s' " % flightno + \
                 "AND to_char(dep_date, 'DD-MON-YYYY')='%s' " % dep_date
         self.update(stmt)

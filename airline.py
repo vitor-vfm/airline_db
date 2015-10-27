@@ -85,6 +85,8 @@ class UI():
         """
         Receive a date from the user
         and check for errors
+        
+        Format: DD-MON-YYYY
         """
         pattern = r"^[0-9]{2}-[A-Z]{3}-[0-9]{4}$"
         while True:
@@ -359,12 +361,16 @@ class UI():
         of a given flight
         """
         flightno = input("Inform which flight departed: ").upper()
-        dep_date = input("Inform the flight's scheduled departure day (YYYY-MM-DD): ")
-        actual_departure = input("Inform date and time of departure " + \
-                "(YYYY-MM-DD HH:MI): ")
-        self.db.recordActualTime(flightno, dep_date, actual_departure, departure=True)
-        print("Done")
-        self.userOptions()
+        if not self.db.flightExists(flightno):
+            print("That is not a scheduled flight")
+            self.userOptions()
+        else:
+            dep_date = self.getDate("Inform the flight's scheduled departure day (DD-MON-YYYY): ")
+            actual_departure = input("Inform date and time of departure " + \
+                    "(DD-MON-YYYY HH:MI): ")
+            self.db.recordActualTime(flightno, dep_date, actual_departure, departure=True)
+            print("Done")
+            self.userOptions()
 
 
     def recordArrival(self):
@@ -373,11 +379,16 @@ class UI():
         of a given flight
         """
         flightno = input("Inform which flight arrived: ").upper()
-        dep_date = self.getDate("Inform the flight's scheduled arrival day (YYYY-MM-DD): ")
-        actual_arrival = input("Inform date and time of arrival (YYYY-MM-DD HH:MI): ")
-        self.db.recordActualTime(flightno, dep_date, actual_arrival, departure=False)
-        print("Done")
-        self.userOptions()
+
+        if not self.db.flightExists(flightno):
+            print("That is not a scheduled flight")
+            self.userOptions()
+        else:
+            dep_date = self.getDate("Inform the flight's scheduled departure day (DD-MON-YYYY): ")
+            actual_arrival = input("Inform date and time of arrival (DD-MON-YYYY HH:MI): ")
+            self.db.recordActualTime(flightno, dep_date, actual_arrival, departure=False)
+            print("Done")
+            self.userOptions()
 
 
 
